@@ -12,6 +12,7 @@ import android.widget.TextView;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -36,13 +37,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 //TODO Fetch data event
+                sendRequest();
             }
         });
 
 
     }
 
-    public void sendRequest(View view)
+    public void sendRequest()
     {
         final String url ="http://localhost:8080/api/v1/house";
         new RESTTask().execute(url);
@@ -52,7 +54,8 @@ public class MainActivity extends AppCompatActivity
     {
 
         @Override
-        protected ResponseEntity<House> doInBackground(String... uri) {
+        protected ResponseEntity<House> doInBackground(String... uri)
+        {
 
             final String url = uri[0];
             RestTemplate restTemplate = new RestTemplate();
@@ -79,6 +82,20 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
                 return null;
             }
+
+        }
+
+        protected void onPostExecute(ResponseEntity<House> result)
+        {
+            if(result.hasBody())
+            {
+                HttpStatus httpStatus = result.getStatusCode();
+                House hseReturned = result.getBody();
+
+                String houseData = result.getBody().toString();
+                displayDataTxt.setText(houseData);
+            }
+            else return;
 
         }
     }
